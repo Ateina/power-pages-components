@@ -1,0 +1,59 @@
+{% assign status_value = status | default: '455810000' %}
+{% assign color = card_color | default: '#4ade80' %}
+
+{% fetchxml books %}
+    <fetch aggregate="true">
+    <entity name="adrbp_userbookstatus">
+        <attribute name="adrbp_userbookstatusid" alias="bookcount" aggregate="count" />
+        <filter type="and">
+            <condition attribute="adrbp_status" operator="eq" value="{{ status_value }}" />
+            <condition attribute="adrbp_user" operator="eq" value="{{ user.id }}" />
+        </filter>
+    </entity>
+</fetch>
+{% endfetchxml %}
+
+<div class="stat-card" style="--card-color: {{ color }};">
+    <div class="stat-content">
+        <div class="stat-title">{{ title }}</div>
+        <div class="stat-value">{{ books.results.entities[0].bookcount }}</div>
+        <div class="stat-subtitle">{{ secondary_title }}</div>
+    </div>
+    <div class="stat-icon">
+        {{ card_icon }}
+    </div>
+</div>
+
+{% manifest %}
+{
+    "type": "Functional",
+    "displayName": "Book Status Card",
+    "description": "Shows books by status",
+    "tables": ["adrbp_userbookstatus"],
+    "params": [ 
+        { 
+        "id": "title", 
+        "displayName": "Title"
+        },
+        { 
+        "id": "secondary_title", 
+        "displayName": "Secondary Title"
+        },
+        { 
+        "id": "status", 
+        "displayName": "Status", 
+        "description": "Status to filter" 
+        },
+        { 
+        "id": "card_color", 
+        "displayName": "Card Color", 
+        "description": "Card color, use hex in a format #xxxxxx" 
+        },
+        { 
+        "id": "card_icon", 
+        "displayName": "Card Icon", 
+        "description": "Card icon" 
+        }
+    ] 
+}
+{% endmanifest %}
